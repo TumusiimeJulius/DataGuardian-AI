@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as WebSocketHook from "react-use-websocket";
 
-import api from "../services/api";
+import api, { WS_BASE_URL } from "../services/api";
 import Layout from "../components/Layout";
 
 // react-use-websocket Vite Fix
@@ -55,7 +55,7 @@ readyState
 
 }=useWebSocket(
 
-"ws://localhost:8000/ws/dashboard",
+`${WS_BASE_URL}/ws/dashboard`,
 
 {
 

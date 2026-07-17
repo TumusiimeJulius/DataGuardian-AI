@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as WebSocketHook from "react-use-websocket";
 
-import api from "../services/api";
+import api, { API_BASE_URL, WS_BASE_URL } from "../services/api";
 import Layout from "../components/Layout";
 
 import {
@@ -60,7 +60,7 @@ readyState
 
 }=useWebSocket(
 
-"ws://dataguardianai.onrender.com/ws/dashboard",
+`${WS_BASE_URL}/ws/dashboard`,
 
 {
 
@@ -531,7 +531,7 @@ onClick={()=>{
 
 window.open(
 
-`http://127.0.0.1:8000/download/${cleanFile}`,
+`${API_BASE_URL}/download/${cleanFile}`,
 
 "_blank"
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import api from "../services/api";
+import api, { API_BASE_URL } from "../services/api";
 
 import Layout from "../components/Layout";
 
@@ -579,7 +579,7 @@ item.clean_file &&
 
 href={
 
-`http://127.0.0.1:8000/download/${item.clean_file}`
+`${API_BASE_URL}/download/${item.clean_file}`
 
 }
 

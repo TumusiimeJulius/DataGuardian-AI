@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import api from "../services/api";
+import api, { API_BASE_URL } from "../services/api";
 import Layout from "../components/Layout";
 
 import {
@@ -466,7 +466,7 @@ result.repair.cleaned_rows
 
 href={
 
-`http://127.0.0.1:8000/download/${result.repair.clean_file}`
+`${API_BASE_URL}/download/${result.repair.clean_file}`
 
 }
 
