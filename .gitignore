@@ -1,32 +1,22 @@
 # Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.sqlite3
-*.db
+backend/venv/
+backend/__pycache__/
+*.pyc
 
-# Virtual Environment
-venv/
-.env
+# Environment
+backend/.env
 
-# Uploads & Generated Files
-uploads/
-cleaned/
+# SQLite
+backend/*.db
 
-# IDE
-.vscode/
-.idea/
-
-# Logs
-*.log
+# Uploads
+backend/uploads/
+backend/cleaned/
+backend/cleaned_datasets/
 
 # Node
-node_modules/
-dist/
-
-# Build
-build/
+frontend/frontend/node_modules/
+frontend/frontend/dist/
 
 # OS
 .DS_Store
