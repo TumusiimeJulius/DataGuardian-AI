@@ -1,11 +1,16 @@
+import sys
+import os
+
+try:
+    sys.stdout = open("stdout.log", "a", encoding="utf-8", buffering=1)
+    sys.stderr = open("stderr.log", "a", encoding="utf-8", buffering=1)
+    print("\n--- SERVER START / RESTART ---")
+except Exception as e:
+    pass
+
 from dotenv import load_dotenv
-
-
-# ========================================
-# Load Environment Variables
-# ========================================
-
 load_dotenv()
+
 
 
 
@@ -630,9 +635,26 @@ def debug_investigate(question: str):
     return {"status": "success", "steps": steps}
 
 
+@app.get("/debug_logs")
+def debug_logs():
+    stdout_content = ""
+    stderr_content = ""
+    if os.path.exists("stdout.log"):
+        with open("stdout.log", "r", encoding="utf-8", errors="ignore") as f:
+            stdout_content = f.read()[-8000:]
+    if os.path.exists("stderr.log"):
+        with open("stderr.log", "r", encoding="utf-8", errors="ignore") as f:
+            stderr_content = f.read()[-8000:]
+    return {
+        "stdout": stdout_content,
+        "stderr": stderr_content
+    }
+
+
 # ========================================
 # Startup Event
 # ========================================
+
 
 
 
