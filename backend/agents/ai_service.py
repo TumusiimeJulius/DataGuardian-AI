@@ -147,9 +147,8 @@ Provide:
 
 
         response = model.generate_content(
-
-            prompt
-
+            prompt,
+            request_options={"timeout": 10.0}
         )
 
 

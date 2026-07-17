@@ -35,13 +35,15 @@ class MemoryAuditAgent:
 
                 "status": investigation.get("status"),
 
-                "quality_score": investigation.get(
-                    "quality_report",
+                "quality_score": (
+                    investigation.get("quality_report") or
+                    investigation.get("quality_report_before_repair") or
                     {}
                 ).get("quality_score"),
 
-                "issues": investigation.get(
-                    "quality_report",
+                "issues": (
+                    investigation.get("quality_report") or
+                    investigation.get("quality_report_before_repair") or
                     {}
                 ).get("issues"),
 
@@ -107,19 +109,26 @@ class MemoryAuditAgent:
 
         current = history[-1]
 
+        prev_score = previous.get("quality_score")
+        curr_score = current.get("quality_score")
+
+        if prev_score is None or curr_score is None:
+            return {
+                "message": "Quality score missing in history records"
+            }
+
         return {
 
             "previous_quality":
 
-                previous["quality_score"],
+                prev_score,
 
             "current_quality":
 
-                current["quality_score"],
+                curr_score,
 
             "difference":
 
-                current["quality_score"] -
-                previous["quality_score"]
+                curr_score - prev_score
 
         }

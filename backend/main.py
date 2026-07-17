@@ -529,7 +529,6 @@ def startup_event():
 
 
     print(
-
 """
 ===================================
  DataGuardian AI Started
@@ -549,13 +548,13 @@ http://localhost:5173
 
 Available Services:
 
-✓ Upload API
-✓ AI Analysis
-✓ Repair Engine
-✓ History Database
-✓ Analytics Engine
-✓ AI Agents
-✓ WebSocket Monitoring
+[x] Upload API
+[x] AI Analysis
+[x] Repair Engine
+[x] History Database
+[x] Analytics Engine
+[x] AI Agents
+[x] WebSocket Monitoring
 
 
 Status:
@@ -563,5 +562,4 @@ ONLINE
 
 ===================================
 """
-
 )
