@@ -468,48 +468,34 @@ def home():
 
 @app.get("/health")
 def health():
-
+    import importlib
+    genai_legacy_available = False
+    genai_new_available = False
+    try:
+        importlib.import_module("google.generativeai")
+        genai_legacy_available = True
+    except ImportError:
+        pass
+    try:
+        importlib.import_module("google.genai")
+        genai_new_available = True
+    except ImportError:
+        pass
 
     return {
-
-
-        "application":
-
-        "DataGuardian AI",
-
-
-
-        "status":
-
-        "healthy",
-
-
-
-        "database":
-
-        "SQLite connected",
-
-
-
-        "ai_pipeline":
-
-        "active",
-
-
-
-        "analytics":
-
-        "enabled",
-
-
-
-        "agents":
-
-        "running"
-
-
-
+        "application": "DataGuardian AI",
+        "status": "healthy",
+        "database": "SQLite connected",
+        "ai_pipeline": "active",
+        "analytics": "enabled",
+        "agents": "running",
+        "diagnostics": {
+            "google_generativeai_installed": genai_legacy_available,
+            "google_genai_installed": genai_new_available,
+            "gemini_api_key_present": bool(os.getenv("GEMINI_API_KEY"))
+        }
     }
+
 
 
 
