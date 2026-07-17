@@ -4,7 +4,8 @@ import axios from "axios";
 const api = axios.create({
 
 baseURL:
-"https://dataguardianai.onrender.com"
+
+import.meta.env.VITE_API_URL
 
 });
 
