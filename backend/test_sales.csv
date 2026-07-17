@@ -1,0 +1,5 @@
+customer_id,amount,created_at
+1,500,2026-01-01
+2,,2026-01-02
+3,500,invalid
+3,500,invalid
