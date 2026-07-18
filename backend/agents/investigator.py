@@ -326,4 +326,23 @@ class DataInvestigatorAgent:
         investigation["memory_report"] = memory_report
         investigation["comparison_report"] = comparison_report
 
+        # Ensure all data is JSON serializable
+        investigation = self._make_serializable(investigation)
         return investigation
+
+    def _make_serializable(self, obj):
+        """Convert non-JSON-serializable objects to strings recursively"""
+        if isinstance(obj, dict):
+            return {k: self._make_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, (list, tuple)):
+            return [self._make_serializable(item) for item in obj]
+        elif isinstance(obj, (str, int, float, bool, type(None))):
+            return obj
+        elif hasattr(obj, '__dict__'):
+            # Convert objects to dictionaries
+            return str(obj)
+        else:
+            try:
+                return str(obj)
+            except:
+                return f"<non-serializable: {type(obj).__name__}>"

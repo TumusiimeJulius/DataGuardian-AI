@@ -2,10 +2,22 @@ from fastapi import APIRouter
 import traceback
 import logging
 import sys
+import json
 
 router = APIRouter()
 
 logging.basicConfig(level=logging.ERROR)
+
+def make_json_serializable(obj):
+    """Convert non-JSON-serializable objects to strings"""
+    if isinstance(obj, dict):
+        return {k: make_json_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [make_json_serializable(item) for item in obj]
+    elif hasattr(obj, '__dict__'):
+        return str(obj)
+    else:
+        return obj
 
 @router.get("/investigate")
 def investigate(question: str):
@@ -24,6 +36,8 @@ def investigate(question: str):
         result = agent.investigate(question)
         print(f"[INVESTIGATE] Investigation completed successfully", file=sys.stderr)
         
+        # Ensure result is JSON serializable
+        result = make_json_serializable(result)
         return result
 
     except Exception as e:

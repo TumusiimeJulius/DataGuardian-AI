@@ -7273,5 +7273,135 @@
                 }
             ]
         }
+    },
+    {
+        "timestamp": "2026-07-18T17:38:38.612842",
+        "question": "test question",
+        "status": "COMPLETED",
+        "quality_score": 70,
+        "issues": [
+            {
+                "type": "Missing Values",
+                "column": "amount",
+                "count": 1
+            },
+            {
+                "type": "Duplicate Records",
+                "count": 1
+            },
+            {
+                "type": "Invalid Dates",
+                "count": 2
+            }
+        ],
+        "prediction": {
+            "agent": "Data Prediction Agent",
+            "predictions": [
+                {
+                    "metric": "Current Revenue",
+                    "value": 1500.0
+                },
+                {
+                    "metric": "Average Transaction Value",
+                    "value": 500.0
+                },
+                {
+                    "metric": "Revenue Trend",
+                    "trend": "Stable",
+                    "prediction": "Revenue is stable with no significant change."
+                },
+                {
+                    "metric": "Top Customer",
+                    "customer_id": 3,
+                    "revenue": 1000.0
+                }
+            ],
+            "generated_at": "2026-07-18T17:38:38.580894"
+        },
+        "root_causes": {
+            "agent": "Root Cause Agent",
+            "root_causes": [
+                {
+                    "problem": "Missing transaction values",
+                    "possible_cause": "Incomplete data ingestion pipeline",
+                    "confidence": "85%"
+                },
+                {
+                    "problem": "Duplicate transactions",
+                    "possible_cause": "ETL process loading duplicate records",
+                    "confidence": "90%"
+                },
+                {
+                    "problem": "Invalid date values",
+                    "possible_cause": "Incorrect date formatting during data import",
+                    "confidence": "75%"
+                }
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-07-18T17:38:51.092271",
+        "question": "test",
+        "status": "COMPLETED",
+        "quality_score": 70,
+        "issues": [
+            {
+                "type": "Missing Values",
+                "column": "amount",
+                "count": 1
+            },
+            {
+                "type": "Duplicate Records",
+                "count": 1
+            },
+            {
+                "type": "Invalid Dates",
+                "count": 2
+            }
+        ],
+        "prediction": {
+            "agent": "Data Prediction Agent",
+            "predictions": [
+                {
+                    "metric": "Current Revenue",
+                    "value": 1500.0
+                },
+                {
+                    "metric": "Average Transaction Value",
+                    "value": 500.0
+                },
+                {
+                    "metric": "Revenue Trend",
+                    "trend": "Stable",
+                    "prediction": "Revenue is stable with no significant change."
+                },
+                {
+                    "metric": "Top Customer",
+                    "customer_id": 3,
+                    "revenue": 1000.0
+                }
+            ],
+            "generated_at": "2026-07-18T17:38:51.079383"
+        },
+        "root_causes": {
+            "agent": "Root Cause Agent",
+            "root_causes": [
+                {
+                    "problem": "Missing transaction values",
+                    "possible_cause": "Incomplete data ingestion pipeline",
+                    "confidence": "85%"
+                },
+                {
+                    "problem": "Duplicate transactions",
+                    "possible_cause": "ETL process loading duplicate records",
+                    "confidence": "90%"
+                },
+                {
+                    "problem": "Invalid date values",
+                    "possible_cause": "Incorrect date formatting during data import",
+                    "confidence": "75%"
+                }
+            ]
+        }
     }
 ]
