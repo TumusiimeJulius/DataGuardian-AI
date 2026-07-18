@@ -277,11 +277,40 @@ app.include_router(
 )
 
 
+# ========================================
+# Global Exception Handler
+# ========================================
+
+from fastapi.responses import JSONResponse
+from fastapi import Request
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    error_trace = traceback.format_exc()
+    print(f"Unhandled exception: {error_trace}", file=sys.stderr)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "status": "error",
+            "message": str(exc),
+            "type": type(exc).__name__
+        }
+    )
 
 
 
 
 
+
+
+# ========================================
+# Test Endpoint (for debugging)
+# ========================================
+
+@app.get("/test")
+def test_endpoint():
+    return {"status": "ok", "message": "Backend is running"}
 
 
 # ========================================
