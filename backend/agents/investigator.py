@@ -9,18 +9,12 @@ import pandas as pd
 from datahub.client import datahub_client
 from agents.ai_service import generate_analysis
 
-from agents.quality_agent import DataQualityAgent
-from agents.recommendation_agent import RecommendationAgent
-from agents.rootcause_agent import RootCauseAgent
-from agents.lineage_agent import LineageAgent
-from agents.anomaly_agent import AnomalyDetectionAgent
-from agents.prediction_agent import PredictionAgent
-from agents.decision_agent import DecisionAgent
-from agents.memory_agent import MemoryAuditAgent
-from agents.alert_agent import AlertMonitoringAgent
-from agents.observability_agent import DataObservabilityAgent
-from agents.pipeline_agent import PipelineMonitoringAgent
-from agents.repair_agent import RepairAgent
+import importlib
+
+# Note: agent modules are imported dynamically inside the initializer
+# to avoid hard failures at module import time in constrained production
+# environments (this prevents the whole app from crashing if a single
+# agent has an import-time error).
 
 
 class DataInvestigatorAgent:
@@ -30,28 +24,32 @@ class DataInvestigatorAgent:
         self.name = "Data Investigator Agent"
         self.initialization_errors = []
 
-        # Initialize agents with error tracking
+        # Initialize agents with error tracking using dynamic imports
         agents_to_init = [
-            ('quality_agent', DataQualityAgent),
-            ('recommendation_agent', RecommendationAgent),
-            ('rootcause_agent', RootCauseAgent),
-            ('lineage_agent', LineageAgent),
-            ('anomaly_agent', AnomalyDetectionAgent),
-            ('prediction_agent', PredictionAgent),
-            ('decision_agent', DecisionAgent),
-            ('memory_agent', MemoryAuditAgent),
-            ('alert_agent', AlertMonitoringAgent),
-            ('observability_agent', DataObservabilityAgent),
-            ('pipeline_agent', PipelineMonitoringAgent),
-            ('repair_agent', RepairAgent),
+            ('quality_agent', 'agents.quality_agent', 'DataQualityAgent'),
+            ('recommendation_agent', 'agents.recommendation_agent', 'RecommendationAgent'),
+            ('rootcause_agent', 'agents.rootcause_agent', 'RootCauseAgent'),
+            ('lineage_agent', 'agents.lineage_agent', 'LineageAgent'),
+            ('anomaly_agent', 'agents.anomaly_agent', 'AnomalyDetectionAgent'),
+            ('prediction_agent', 'agents.prediction_agent', 'PredictionAgent'),
+            ('decision_agent', 'agents.decision_agent', 'DecisionAgent'),
+            ('memory_agent', 'agents.memory_agent', 'MemoryAuditAgent'),
+            ('alert_agent', 'agents.alert_agent', 'AlertMonitoringAgent'),
+            ('observability_agent', 'agents.observability_agent', 'DataObservabilityAgent'),
+            ('pipeline_agent', 'agents.pipeline_agent', 'PipelineMonitoringAgent'),
+            ('repair_agent', 'agents.repair_agent', 'RepairAgent'),
         ]
-        
-        for agent_name, agent_class in agents_to_init:
+
+        for agent_name, module_path, class_name in agents_to_init:
             try:
+                module = importlib.import_module(module_path)
+                agent_class = getattr(module, class_name)
                 setattr(self, agent_name, agent_class())
             except Exception as e:
                 self.initialization_errors.append({
                     'agent': agent_name,
+                    'module': module_path,
+                    'class': class_name,
                     'error': str(e),
                     'trace': traceback.format_exc()
                 })
