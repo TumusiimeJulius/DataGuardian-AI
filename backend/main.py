@@ -17,7 +17,7 @@ load_dotenv()
 
 
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -59,28 +59,23 @@ Base.metadata.create_all(
 # ========================================
 
 
-from api.routes import router as main_router
+def _import_router(module_name: str, router_name: str):
+    try:
+        module = __import__(module_name, fromlist=[router_name])
+        return getattr(module, router_name)
+    except Exception as exc:
+        print(f"WARNING: failed to import {module_name}: {exc}")
+        return APIRouter()
 
 
-from api.agent_routes import router as agent_router
-
-
-from api.dashboard_routes import router as dashboard_router
-
-
-from api.websocket_routes import router as websocket_router
-
-
-from api.upload_routes import router as upload_router
-
-
-from api.history_routes import router as history_router
-
-
-from api.download_routes import router as download_router
-
-
-from api.analytics_routes import router as analytics_router
+main_router = _import_router("api.routes", "router")
+agent_router = _import_router("api.agent_routes", "router")
+dashboard_router = _import_router("api.dashboard_routes", "router")
+websocket_router = _import_router("api.websocket_routes", "router")
+upload_router = _import_router("api.upload_routes", "router")
+history_router = _import_router("api.history_routes", "router")
+download_router = _import_router("api.download_routes", "router")
+analytics_router = _import_router("api.analytics_routes", "router")
 
 
 

@@ -2,3 +2,57 @@
 --- SERVER START / RESTART ---
 
 --- SERVER START / RESTART ---
+
+--- SERVER START / RESTART ---
+
+--- SERVER START / RESTART ---
+
+--- SERVER START / RESTART ---
+WARNING: failed to import api.upload_routes: Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+import ok
+<fastapi.applications.FastAPI object at 0x0000027DA8199D30>
+
+--- SERVER START / RESTART ---
+WARNING: failed to import api.upload_routes: Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+
+===================================
+ DataGuardian AI Started
+===================================
+
+Backend:
+http://127.0.0.1:8000
+
+
+API Docs:
+http://127.0.0.1:8000/docs
+
+
+Frontend:
+http://localhost:5173
+
+
+Available Services:
+
+[x] Upload API
+[x] AI Analysis
+[x] Repair Engine
+[x] History Database
+[x] Analytics Engine
+[x] AI Agents
+[x] WebSocket Monitoring
+
+
+Status:
+ONLINE
+
+===================================
+
+Dataset: C:\Users\juliu\Desktop\DataGuardian-AI\backend\test_sales.csv

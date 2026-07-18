@@ -26,3 +26,47 @@ Traceback (most recent call last):
   File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 17, in <module>
     from fastapi import FastAPI
 ModuleNotFoundError: No module named 'fastapi'
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 14, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 14, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 14, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 14, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 74, in <module>
+    from api.upload_routes import router as upload_router
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\api\upload_routes.py", line 7, in <module>
+    from services.repair_service import repair_dataset
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\services\repair_service.py", line 1, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 74, in <module>
+    from api.upload_routes import router as upload_router
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\api\upload_routes.py", line 7, in <module>
+    from services.repair_service import repair_dataset
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\services\repair_service.py", line 1, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
