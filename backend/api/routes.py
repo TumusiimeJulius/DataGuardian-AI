@@ -3,6 +3,7 @@ import traceback
 import logging
 import sys
 import json
+import threading
 
 router = APIRouter()
 
@@ -32,8 +33,30 @@ def investigate(question: str):
         agent = DataInvestigatorAgent()
         print(f"[INVESTIGATE] Agent instance created", file=sys.stderr)
         
-        # Run investigation
-        result = agent.investigate(question)
+        # Run investigation with timeout to avoid gateway timeouts
+        result_container = {}
+
+        def _run():
+            try:
+                result_container['value'] = agent.investigate(question)
+            except Exception as ex:
+                result_container['error'] = ex
+
+        thread = threading.Thread(target=_run)
+        thread.start()
+        thread.join(timeout=25)
+
+        if thread.is_alive():
+            print(f"[INVESTIGATE] Investigation timed out after 25s", file=sys.stderr)
+            return {
+                "status": "TIMED_OUT",
+                "message": "Investigation did not complete within timeout",
+            }
+
+        if 'error' in result_container:
+            raise result_container['error']
+
+        result = result_container.get('value')
         print(f"[INVESTIGATE] Investigation completed successfully", file=sys.stderr)
         
         # Ensure result is JSON serializable
