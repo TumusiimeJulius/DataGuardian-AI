@@ -16,7 +16,7 @@ class RecommendationAgent:
 
 
 
-        issues = quality_report["issues"]
+        issues = quality_report.get("issues", [])
 
 
 

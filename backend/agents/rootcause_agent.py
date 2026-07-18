@@ -12,7 +12,7 @@ class RootCauseAgent:
         causes = []
 
 
-        for issue in quality_report["issues"]:
+        for issue in quality_report.get("issues", []):
 
 
             if issue["type"] == "Missing Values":

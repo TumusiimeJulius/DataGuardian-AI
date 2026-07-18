@@ -1,4 +1,7 @@
-import requests
+try:
+    import requests  # type: ignore
+except Exception:  # pragma: no cover - allows missing dependency in minimal environments
+    requests = None
 
 
 class DataHubClient:

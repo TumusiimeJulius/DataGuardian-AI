@@ -4,7 +4,10 @@ import traceback
 import time
 import sys
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from datahub.client import datahub_client
 from agents.ai_service import generate_analysis
@@ -141,7 +144,14 @@ class DataInvestigatorAgent:
 
             print("Dataset:", dataset_path)
 
-            if not dataset_path.exists():
+            if pd is None:
+                print("[INVESTIGATE] pandas unavailable; using fallback mock dataset", file=sys.stderr)
+                data = {
+                    "customer_id": [1, 2, 3, 4],
+                    "amount": [100.0, 150.0, 200.0, 75.0],
+                    "created_at": ["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04"],
+                }
+            elif not dataset_path.exists():
                 # Use mock data when file doesn't exist
                 print("[INVESTIGATE] Dataset not found. Using mock data.", file=sys.stderr)
                 data = pd.DataFrame({
@@ -156,11 +166,7 @@ class DataInvestigatorAgent:
 
             print(f"[INVESTIGATE] Error loading dataset: {str(e)}", file=sys.stderr)
             # Still use mock data as fallback
-            data = pd.DataFrame({
-                "customer_id": [1, 2, 3, 4],
-                "amount": [100.0, 150.0, 200.0, 75.0],
-                "created_at": ["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04"]
-            })
+            data = None
 
         # ---------------------------------------------
         # Observability

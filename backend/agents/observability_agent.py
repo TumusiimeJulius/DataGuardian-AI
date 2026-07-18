@@ -43,7 +43,12 @@ class DataObservabilityAgent:
         # Dataset volume
         # ----------------------------------
 
-        rows = len(data)
+        if isinstance(data, dict):
+            rows = len(data.get("customer_id", []))
+            actual = list(data.keys())
+        else:
+            rows = len(data)
+            actual = list(data.columns)
 
         report["checks"].append({
 
@@ -70,8 +75,6 @@ class DataObservabilityAgent:
         # ----------------------------------
 
         expected = context.get("schema", [])
-
-        actual = list(data.columns)
 
         missing = [c for c in expected if c not in actual]
 
@@ -115,15 +118,14 @@ class DataObservabilityAgent:
         # Null percentage
         # ----------------------------------
 
-        nulls = data.isnull().mean() * 100
-
-        report["null_percentage"] = {
-
-            col: round(val, 2)
-
-            for col, val in nulls.items()
-
-        }
+        if hasattr(data, 'isnull'):
+            nulls = data.isnull().mean() * 100
+            report["null_percentage"] = {
+                col: round(val, 2)
+                for col, val in nulls.items()
+            }
+        else:
+            report["null_percentage"] = {}
 
         # ----------------------------------
         # Final Status

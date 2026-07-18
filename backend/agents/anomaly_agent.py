@@ -1,5 +1,7 @@
-import pandas as pd
-
+try:
+    import pandas as pd
+except Exception:  # pragma: no cover - allows missing dependency
+    pd = None
 
 
 class AnomalyDetectionAgent:
@@ -30,38 +32,38 @@ class AnomalyDetectionAgent:
         # 1. Detect missing values
         # --------------------------------
 
-        missing = data.isnull().sum()
+        if pd is not None:
+            missing = data.isnull().sum()
 
 
-        for column, count in missing.items():
+            for column, count in missing.items():
 
-            if count > 0:
+                if count > 0:
+                    report["anomalies"].append(
 
-                report["anomalies"].append(
+                        {
 
-                    {
-
-                        "type":
-                        "Missing Data Anomaly",
-
-
-                        "column":
-                        column,
+                            "type":
+                            "Missing Data Anomaly",
 
 
-                        "count":
-                        int(count),
+                            "column":
+                            column,
 
 
-                        "severity":
-                        "MEDIUM"
-
-                    }
-
-                )
+                            "count":
+                            int(count),
 
 
-                report["anomaly_score"] -= 10
+                            "severity":
+                            "MEDIUM"
+
+                        }
+
+                    )
+
+
+                    report["anomaly_score"] -= 10
 
 
 
@@ -71,34 +73,33 @@ class AnomalyDetectionAgent:
         # 2. Detect duplicate transactions
         # --------------------------------
 
-        duplicates = data.duplicated().sum()
+        if pd is not None:
+            duplicates = data.duplicated().sum()
 
 
-        if duplicates > 0:
+            if duplicates > 0:
+                report["anomalies"].append(
+
+                    {
 
 
-            report["anomalies"].append(
-
-                {
-
-
-                    "type":
-                    "Duplicate Transaction Anomaly",
+                        "type":
+                        "Duplicate Transaction Anomaly",
 
 
-                    "count":
-                    int(duplicates),
+                        "count":
+                        int(duplicates),
 
 
-                    "severity":
-                    "HIGH"
+                        "severity":
+                        "HIGH"
 
-                }
+                    }
 
-            )
+                )
 
 
-            report["anomaly_score"] -= 15
+                report["anomaly_score"] -= 15
 
 
 
@@ -108,7 +109,7 @@ class AnomalyDetectionAgent:
         # 3. Detect abnormal amounts
         # --------------------------------
 
-        if "amount" in data.columns:
+        if pd is not None and "amount" in data.columns:
 
 
             try:
@@ -197,7 +198,7 @@ class AnomalyDetectionAgent:
         # 4. Detect invalid dates
         # --------------------------------
 
-        if "created_at" in data.columns:
+        if pd is not None and "created_at" in data.columns:
 
 
             invalid_dates = pd.to_datetime(

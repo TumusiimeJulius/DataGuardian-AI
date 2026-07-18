@@ -1,6 +1,8 @@
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:  # pragma: no cover - allows missing dependency
+    pd = None
 from datetime import datetime
-
 
 
 class PredictionAgent:
@@ -31,7 +33,16 @@ class PredictionAgent:
         # Check revenue column
         # --------------------------------
 
-        if "amount" not in data.columns:
+        if data is None:
+            report["predictions"].append({"error": "No data supplied"})
+            return report
+
+        if isinstance(data, dict):
+            columns = list(data.keys())
+        else:
+            columns = list(getattr(data, 'columns', []))
+
+        if "amount" not in columns:
 
 
             report["predictions"].append(
@@ -50,6 +61,10 @@ class PredictionAgent:
 
 
 
+
+        if pd is None:
+            report["predictions"].append({"metric": "Fallback", "value": "pandas unavailable"})
+            return report
 
         # Convert amount to numeric
 
