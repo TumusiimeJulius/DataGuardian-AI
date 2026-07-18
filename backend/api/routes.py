@@ -5,13 +5,12 @@ import logging
 
 router = APIRouter()
 
-agent = DataInvestigatorAgent()
-
 logging.basicConfig(level=logging.ERROR)
 
 @router.get("/investigate")
 def investigate(question: str):
     try:
+        agent = DataInvestigatorAgent()
         return agent.investigate(question)
 
     except Exception as e:
