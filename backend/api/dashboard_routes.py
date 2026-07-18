@@ -9,9 +9,9 @@ router = APIRouter(
 
 
 
-# ==========================================
+# =========================================
 # Dashboard Overview
-# ==========================================
+# =========================================
 
 @router.get("/overview")
 def dashboard_overview():
@@ -21,78 +21,48 @@ def dashboard_overview():
 
     return {
 
-
         "status": "ONLINE",
 
-
         "timestamp": now,
-
-
-        "system": {
-
-            "application":
-            "DataGuardian AI",
-
-            "pipeline":
-            "ACTIVE",
-
-            "database":
-            "SQLite Connected",
-
-            "analytics":
-            "Enabled"
-
-        },
-
 
 
         "metrics": {
 
 
-            "datasets_processed":
-
-            0,
+            "datasets_processed": 0,
 
 
-            "quality_score":
-
-            0,
+            "quality_average": 0,
 
 
-            "anomalies_detected":
-
-            0,
+            "anomalies_detected": 0,
 
 
-            "repairs_completed":
+            "repairs_completed": 0,
 
-            0
+
+            "active_agents": 10
 
 
         },
 
 
-
-        "agents": {
-
-
-            "total":
-
-            10,
+        "system": {
 
 
-            "active":
+            "database":
+            "SQLite Connected",
 
-            10,
+
+            "ai_engine":
+            "Gemini AI Active",
 
 
-            "failed":
-
-            0
+            "pipeline":
+            "Running"
 
 
         }
-
 
 
     }
@@ -103,9 +73,9 @@ def dashboard_overview():
 
 
 
-# ==========================================
+# =========================================
 # AI Agents Status
-# ==========================================
+# =========================================
 
 @router.get("/agents")
 def agents():
@@ -117,218 +87,117 @@ def agents():
     return {
 
 
-        "agents": [
+        "agents":[
 
 
 
             {
-
-                "name":
-                "Data Investigator Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Data Investigator Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
                 "Coordinates AI investigations."
-
             },
 
 
 
             {
-
-                "name":
-                "Pipeline Monitoring Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Pipeline Monitoring Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
                 "Monitors ETL pipelines."
-
             },
 
 
 
             {
-
-                "name":
-                "Repair Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Data Quality Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
-                "Automatically repairs corrupted datasets."
-
+                "Calculates data quality metrics."
             },
 
 
 
             {
-
-                "name":
-                "Data Quality Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Anomaly Detection Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
-                "Calculates dataset quality scores."
-
+                "Detects unusual patterns."
             },
 
 
 
             {
-
-                "name":
-                "Root Cause Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Root Cause Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
                 "Finds causes of data problems."
-
             },
 
 
 
             {
-
-                "name":
-                "Anomaly Detection Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Repair Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
-                "Detects unusual data patterns."
-
+                "Creates clean datasets."
             },
 
 
 
             {
+                "name":"Recommendation Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
+                "description":
+                "Generates improvement suggestions."
+            },
 
-                "name":
-                "Prediction Agent",
 
-                "status":
-                "Running",
 
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+            {
+                "name":"Prediction Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
                 "Predicts future data risks."
-
             },
 
 
 
             {
-
-                "name":
-                "Recommendation Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
-                "description":
-                "Generates improvement recommendations."
-
-            },
-
-
-
-            {
-
-                "name":
-                "Alert Monitoring Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Alert Monitoring Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
                 "Monitors system alerts."
-
             },
 
 
 
             {
-
-                "name":
-                "Memory Agent",
-
-                "status":
-                "Running",
-
-                "health":
-                "Healthy",
-
-                "last_execution":
-                now,
-
+                "name":"Memory Agent",
+                "status":"Running",
+                "health":"Healthy",
+                "last_execution":now,
                 "description":
                 "Stores investigation history."
-
             }
-
 
 
         ]
