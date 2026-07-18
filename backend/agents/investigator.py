@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 import traceback
 import time
+import sys
 
 import pandas as pd
 
@@ -144,7 +145,7 @@ class DataInvestigatorAgent:
 
             if not dataset_path.exists():
                 # Use mock data when file doesn't exist
-                print("[INVESTIGATE] Dataset not found. Using mock data.", file=__import__('sys').stderr)
+                print("[INVESTIGATE] Dataset not found. Using mock data.", file=sys.stderr)
                 data = pd.DataFrame({
                     "customer_id": [1, 2, 3, 4],
                     "amount": [100.0, 150.0, 200.0, 75.0],
@@ -155,7 +156,7 @@ class DataInvestigatorAgent:
 
         except Exception as e:
 
-            print(f"[INVESTIGATE] Error loading dataset: {str(e)}", file=__import__('sys').stderr)
+            print(f"[INVESTIGATE] Error loading dataset: {str(e)}", file=sys.stderr)
             # Still use mock data as fallback
             data = pd.DataFrame({
                 "customer_id": [1, 2, 3, 4],
