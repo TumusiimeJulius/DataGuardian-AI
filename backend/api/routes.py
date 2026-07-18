@@ -1,22 +1,29 @@
 from fastapi import APIRouter
 from agents.investigator import DataInvestigatorAgent
-
+import traceback
+import logging
 
 router = APIRouter()
 
 agent = DataInvestigatorAgent()
 
-
-import traceback
+logging.basicConfig(level=logging.ERROR)
 
 @router.get("/investigate")
-def investigate(question:str):
+def investigate(question: str):
     try:
-        result = agent.investigate(question)
-        return result
+        return agent.investigate(question)
+
     except Exception as e:
+        error = traceback.format_exc()
+
+        print("========== INVESTIGATION ERROR ==========")
+        print(error)
+
+        logging.exception("Investigation failed")
+
         return {
             "status": "FAILED",
             "error": str(e),
-            "traceback": traceback.format_exc()
+            "traceback": error,
         }
