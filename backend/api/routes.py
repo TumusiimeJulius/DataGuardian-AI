@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from agents.investigator import DataInvestigatorAgent
 import traceback
 import logging
 
@@ -10,6 +9,7 @@ logging.basicConfig(level=logging.ERROR)
 @router.get("/investigate")
 def investigate(question: str):
     try:
+        from agents.investigator import DataInvestigatorAgent
         agent = DataInvestigatorAgent()
         return agent.investigate(question)
 
