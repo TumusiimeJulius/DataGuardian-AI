@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 
 class MemoryAuditAgent:
@@ -8,22 +9,29 @@ class MemoryAuditAgent:
     def __init__(self):
 
         self.name = "Memory & Audit Agent"
+        
+        # Use proper path resolution
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        self.memory_file = BASE_DIR / "investigation_history.json"
 
-        self.memory_file = "investigation_history.json"
+        if not self.memory_file.exists():
 
-        if not os.path.exists(self.memory_file):
-
-            with open(self.memory_file, "w") as f:
-
-                json.dump([], f)
+            try:
+                with open(self.memory_file, "w") as f:
+                    json.dump([], f)
+            except Exception as e:
+                print(f"Warning: Could not create memory file: {e}")
+                # Continue anyway - memory will be empty but won't crash
 
 
 
     def save(self, investigation):
 
-        with open(self.memory_file, "r") as f:
-
-            history = json.load(f)
+        try:
+            with open(self.memory_file, "r") as f:
+                history = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            history = []
 
         history.append(
 
@@ -59,9 +67,11 @@ class MemoryAuditAgent:
 
         )
 
-        with open(self.memory_file, "w") as f:
-
-            json.dump(history, f, indent=4)
+        try:
+            with open(self.memory_file, "w") as f:
+                json.dump(history, f, indent=4)
+        except Exception as e:
+            print(f"Warning: Could not save to memory file: {e}")
 
         return {
 
@@ -75,9 +85,11 @@ class MemoryAuditAgent:
 
     def history(self):
 
-        with open(self.memory_file, "r") as f:
-
-            return json.load(f)
+        try:
+            with open(self.memory_file, "r") as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
 
 
 

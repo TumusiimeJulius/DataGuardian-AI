@@ -313,6 +313,33 @@ def test_endpoint():
     return {"status": "ok", "message": "Backend is running"}
 
 
+@app.get("/agent_health")
+def agent_health():
+    """Check if all agents can be initialized"""
+    try:
+        from agents.investigator import DataInvestigatorAgent
+        agent = DataInvestigatorAgent()
+        
+        if agent.initialization_errors:
+            return {
+                "status": "degraded",
+                "message": f"{len(agent.initialization_errors)} agent(s) failed",
+                "errors": agent.initialization_errors
+            }
+        else:
+            return {
+                "status": "healthy",
+                "message": "All agents initialized successfully",
+                "agents_count": 12
+            }
+    except Exception as e:
+        return {
+            "status": "failed",
+            "error": str(e),
+            "type": type(e).__name__
+        }
+
+
 # ========================================
 # Root Endpoint
 # ========================================

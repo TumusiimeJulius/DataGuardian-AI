@@ -27,19 +27,41 @@ class DataInvestigatorAgent:
     def __init__(self):
 
         self.name = "Data Investigator Agent"
+        self.initialization_errors = []
 
-        self.quality_agent = DataQualityAgent()
-        self.recommendation_agent = RecommendationAgent()
-        self.rootcause_agent = RootCauseAgent()
-        self.lineage_agent = LineageAgent()
-        self.anomaly_agent = AnomalyDetectionAgent()
-        self.prediction_agent = PredictionAgent()
-        self.decision_agent = DecisionAgent()
-        self.memory_agent = MemoryAuditAgent()
-        self.alert_agent = AlertMonitoringAgent()
-        self.observability_agent = DataObservabilityAgent()
-        self.pipeline_agent = PipelineMonitoringAgent()
-        self.repair_agent = RepairAgent()
+        # Initialize agents with error tracking
+        agents_to_init = [
+            ('quality_agent', DataQualityAgent),
+            ('recommendation_agent', RecommendationAgent),
+            ('rootcause_agent', RootCauseAgent),
+            ('lineage_agent', LineageAgent),
+            ('anomaly_agent', AnomalyDetectionAgent),
+            ('prediction_agent', PredictionAgent),
+            ('decision_agent', DecisionAgent),
+            ('memory_agent', MemoryAuditAgent),
+            ('alert_agent', AlertMonitoringAgent),
+            ('observability_agent', DataObservabilityAgent),
+            ('pipeline_agent', PipelineMonitoringAgent),
+            ('repair_agent', RepairAgent),
+        ]
+        
+        for agent_name, agent_class in agents_to_init:
+            try:
+                setattr(self, agent_name, agent_class())
+            except Exception as e:
+                self.initialization_errors.append({
+                    'agent': agent_name,
+                    'error': str(e),
+                    'trace': traceback.format_exc()
+                })
+                # Set to None so we can handle gracefully
+                setattr(self, agent_name, None)
+        
+        # If there are errors, log them but continue
+        if self.initialization_errors:
+            print(f"\n[WARN] {len(self.initialization_errors)} agent(s) failed to initialize:")
+            for err in self.initialization_errors:
+                print(f"  - {err['agent']}: {err['error']}")
 
     # -------------------------------------------------
     # Safe Execution
@@ -69,6 +91,17 @@ class DataInvestigatorAgent:
     def investigate(self, question):
 
         start_time = time.time()
+        
+        # Report any initialization errors first
+        if self.initialization_errors:
+            return {
+                "status": "PARTIAL_FAILURE",
+                "question": question,
+                "message": f"{len(self.initialization_errors)} agent(s) failed to initialize",
+                "initialization_errors": self.initialization_errors,
+            }
+
+        # Continue with investigation if all agents initialized successfully
 
         # ---------------------------------------------
         # DataHub
