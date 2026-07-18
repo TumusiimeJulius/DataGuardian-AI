@@ -4,6 +4,8 @@ import logging
 import sys
 import json
 import threading
+import os
+from datetime import datetime
 
 router = APIRouter()
 
@@ -23,6 +25,17 @@ def make_json_serializable(obj):
 @router.get("/investigate")
 def investigate(question: str):
     try:
+        # Emit lightweight environment debug info to stderr for Render logs
+        print(f"[INVESTIGATE] timestamp={datetime.utcnow().isoformat()}Z", file=sys.stderr)
+        print(f"[INVESTIGATE] python_version={sys.version.splitlines()[0]}", file=sys.stderr)
+        # Log a short snapshot of relevant env vars
+        env_keys = [k for k in os.environ.keys() if k.upper().startswith(('RENDER','GITHUB','RAILS','VCAP'))]
+        for k in env_keys[:20]:
+            try:
+                print(f"[INVESTIGATE] ENV {k}={os.environ.get(k)}", file=sys.stderr)
+            except Exception:
+                pass
+        print(f"[INVESTIGATE] sys.path_len={len(sys.path)}", file=sys.stderr)
         # Import here to catch initialization errors
         from agents.investigator import DataInvestigatorAgent
         
