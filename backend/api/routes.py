@@ -57,10 +57,10 @@ def investigate(question: str):
 
         thread = threading.Thread(target=_run)
         thread.start()
-        thread.join(timeout=25)
+        thread.join(timeout=12)
 
         if thread.is_alive():
-            print(f"[INVESTIGATE] Investigation timed out after 25s", file=sys.stderr)
+            print(f"[INVESTIGATE] Investigation timed out after 12s", file=sys.stderr)
             return {
                 "status": "TIMED_OUT",
                 "message": "Investigation did not complete within timeout",

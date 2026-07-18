@@ -42,6 +42,13 @@ def local_analysis(question, context, error=None):
 
 def generate_analysis(question, context):
 
+    if os.getenv("ENVIRONMENT") == "production" or os.getenv("SKIP_EXTERNAL_AI", "0").lower() in {"1", "true", "yes", "on"}:
+        return local_analysis(
+            question,
+            context,
+            "External AI generation is disabled in this environment."
+        )
+
     # API key missing
     if not API_KEY:
         return local_analysis(
