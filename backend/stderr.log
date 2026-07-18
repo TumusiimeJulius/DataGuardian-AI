@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from main import debug_investigate; print(debug_investigate('test'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 17, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'
+Traceback (most recent call last):
+  File "<string>", line 5, in <module>
+    import main
+  File "c:\Users\juliu\Desktop\DataGuardian-AI\backend\main.py", line 17, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'
