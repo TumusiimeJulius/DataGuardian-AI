@@ -1,4 +1,6 @@
 from datetime import datetime
+from pathlib import Path
+import traceback
 import time
 
 import pandas as pd
@@ -16,482 +18,276 @@ from agents.decision_agent import DecisionAgent
 from agents.memory_agent import MemoryAuditAgent
 from agents.alert_agent import AlertMonitoringAgent
 from agents.observability_agent import DataObservabilityAgent
-
-# Pipeline Agent
 from agents.pipeline_agent import PipelineMonitoringAgent
-
-# Repair Agent
 from agents.repair_agent import RepairAgent
 
 
-
 class DataInvestigatorAgent:
-
 
     def __init__(self):
 
         self.name = "Data Investigator Agent"
 
-
         self.quality_agent = DataQualityAgent()
-
         self.recommendation_agent = RecommendationAgent()
-
         self.rootcause_agent = RootCauseAgent()
-
         self.lineage_agent = LineageAgent()
-
         self.anomaly_agent = AnomalyDetectionAgent()
-
         self.prediction_agent = PredictionAgent()
-
         self.decision_agent = DecisionAgent()
-
         self.memory_agent = MemoryAuditAgent()
-
         self.alert_agent = AlertMonitoringAgent()
-
         self.observability_agent = DataObservabilityAgent()
-
-
-        # Pipeline Monitoring
         self.pipeline_agent = PipelineMonitoringAgent()
-
-
-        # Data Repair
         self.repair_agent = RepairAgent()
 
-
-
-    # ----------------------------------------
-    # Safe Execution Handler
-    # ----------------------------------------
+    # -------------------------------------------------
+    # Safe Execution
+    # -------------------------------------------------
 
     def _safe_execute(self, func, *args):
 
         try:
-
             return func(*args)
-
 
         except Exception as e:
 
+            print(f"\nERROR in {func.__name__}")
+            traceback.print_exc()
+
             return {
-
                 "status": "FAILED",
-
-                "error": str(e)
-
+                "agent": func.__name__,
+                "error": str(e),
+                "traceback": traceback.format_exc()
             }
 
-
-
-    # ----------------------------------------
-    # Investigation Engine
-    # ----------------------------------------
+    # -------------------------------------------------
+    # Investigation
+    # -------------------------------------------------
 
     def investigate(self, question):
 
-
         start_time = time.time()
 
-
-
-        # ----------------------------------------
-        # DataHub Context
-        # ----------------------------------------
+        # ---------------------------------------------
+        # DataHub
+        # ---------------------------------------------
 
         context = self._safe_execute(
-
             datahub_client.search_dataset,
-
             "sales"
-
         )
 
-
-
-        # ----------------------------------------
-        # Lineage Analysis
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Lineage
+        # ---------------------------------------------
 
         lineage_report = self._safe_execute(
-
             self.lineage_agent.analyze,
-
             context
-
         )
 
-
-
-        # ----------------------------------------
-        # Pipeline Monitoring
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Pipeline
+        # ---------------------------------------------
 
         pipeline_report = self._safe_execute(
-
             self.pipeline_agent.analyze,
-
-            {
-
-                "lineage": lineage_report
-
-            }
-
+            {"lineage": lineage_report}
         )
 
-
-
-        # ----------------------------------------
-        # Load Dataset
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Dataset
+        # ---------------------------------------------
 
         try:
 
-            data = pd.read_csv(
-                "test_sales.csv"
-            )
+            BASE_DIR = Path(__file__).resolve().parent.parent
 
+            dataset_path = BASE_DIR / "test_sales.csv"
 
-        except Exception as e:
+            print("Dataset:", dataset_path)
+
+            if not dataset_path.exists():
+
+                return {
+                    "status": "FAILED",
+                    "agent": self.name,
+                    "error": f"Dataset not found: {dataset_path}"
+                }
+
+            data = pd.read_csv(dataset_path)
+
+        except Exception:
 
             return {
-
-                "agent": self.name,
-
                 "status": "FAILED",
-
-                "timestamp": datetime.now().isoformat(),
-
-                "error": f"Dataset loading failed: {str(e)}"
-
+                "agent": self.name,
+                "error": "Dataset loading failed",
+                "traceback": traceback.format_exc()
             }
 
-
-
-        # ----------------------------------------
-        # Data Observability
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Observability
+        # ---------------------------------------------
 
         observability_report = self._safe_execute(
-
             self.observability_agent.analyze,
-
             data,
-
             context
-
         )
 
-
-
-        # ----------------------------------------
-        # Initial Data Quality
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Quality
+        # ---------------------------------------------
 
         quality_report = self._safe_execute(
-
             self.quality_agent.analyze,
-
             data
-
         )
 
-
-
-        # ----------------------------------------
-        # Anomaly Detection
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Anomalies
+        # ---------------------------------------------
 
         anomaly_report = self._safe_execute(
-
             self.anomaly_agent.analyze,
-
             data
-
         )
 
-
-
-        # ----------------------------------------
+        # ---------------------------------------------
         # Prediction
-        # ----------------------------------------
+        # ---------------------------------------------
 
         prediction_report = self._safe_execute(
-
             self.prediction_agent.predict,
-
             data
-
         )
 
-
-
-        # ----------------------------------------
-        # Root Cause Analysis
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Root Cause
+        # ---------------------------------------------
 
         root_cause_report = self._safe_execute(
-
             self.rootcause_agent.analyze,
-
             quality_report
-
         )
 
-
-
-        # ----------------------------------------
-        # Automated Data Repair
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Repair
+        # ---------------------------------------------
 
         repair_report = self._safe_execute(
-
             self.repair_agent.repair,
-
             data,
-
             quality_report,
-
             anomaly_report,
-
             root_cause_report
-
         )
 
+        # ---------------------------------------------
+        # Quality After Repair
+        # ---------------------------------------------
 
-
-        # ----------------------------------------
-        # Post Repair Validation
-        # ----------------------------------------
-
-        post_repair_quality_report = self._safe_execute(
-
+        quality_after = self._safe_execute(
             self.quality_agent.analyze,
-
             data
-
         )
 
-
-
-        # ----------------------------------------
-        # Recommendations
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Recommendation
+        # ---------------------------------------------
 
         recommendation_report = self._safe_execute(
-
             self.recommendation_agent.generate,
-
-            post_repair_quality_report
-
+            quality_after
         )
 
-
-
-        # ----------------------------------------
-        # Decision Engine
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Decision
+        # ---------------------------------------------
 
         decision_report = self._safe_execute(
-
             self.decision_agent.decide,
-
-            post_repair_quality_report,
-
+            quality_after,
             anomaly_report,
-
             prediction_report,
-
             root_cause_report,
-
             recommendation_report
-
         )
 
-
-
-        # ----------------------------------------
-        # Alert Monitoring
-        # ----------------------------------------
+        # ---------------------------------------------
+        # Alerts
+        # ---------------------------------------------
 
         alert_report = self._safe_execute(
-
             self.alert_agent.analyze,
-
-            post_repair_quality_report,
-
+            quality_after,
             anomaly_report,
-
             prediction_report
-
         )
 
-
-
-        # ----------------------------------------
-        # AI Explanation
-        # ----------------------------------------
+        # ---------------------------------------------
+        # AI
+        # ---------------------------------------------
 
         analysis = self._safe_execute(
-
             generate_analysis,
-
             question,
-
             {
-
-
                 "datahub": context,
-
-
                 "lineage": lineage_report,
-
-
                 "pipeline": pipeline_report,
-
-
                 "observability": observability_report,
-
-
                 "quality_before_repair": quality_report,
-
-
                 "anomalies": anomaly_report,
-
-
                 "predictions": prediction_report,
-
-
                 "root_causes": root_cause_report,
-
-
                 "repair": repair_report,
-
-
-                "quality_after_repair": post_repair_quality_report,
-
-
+                "quality_after_repair": quality_after,
                 "recommendations": recommendation_report,
-
-
                 "decision": decision_report,
-
-
-                "alerts": alert_report
-
-
-            }
-
+                "alerts": alert_report,
+            },
         )
 
-
-
-        execution_time = round(
-
-            time.time() - start_time,
-
-            3
-
-        )
-
-
-
-        # ----------------------------------------
-        # Final Investigation Report
-        # ----------------------------------------
+        execution_time = round(time.time() - start_time, 3)
 
         investigation = {
 
-
             "agent": self.name,
-
-
             "status": "COMPLETED",
-
-
             "timestamp": datetime.now().isoformat(),
-
-
             "execution_time_seconds": execution_time,
-
-
             "question": question,
 
-
             "datahub_context": context,
-
-
             "lineage_report": lineage_report,
-
-
             "pipeline_report": pipeline_report,
-
-
             "observability_report": observability_report,
-
-
             "quality_report_before_repair": quality_report,
-
-
             "anomaly_report": anomaly_report,
-
-
             "prediction_report": prediction_report,
-
-
             "root_cause_report": root_cause_report,
-
-
             "repair_report": repair_report,
-
-
-            "quality_report_after_repair": post_repair_quality_report,
-
-
+            "quality_report_after_repair": quality_after,
             "recommendation_report": recommendation_report,
-
-
             "decision_report": decision_report,
-
-
             "alert_report": alert_report,
-
-
-            "report": analysis
-
-
+            "report": analysis,
         }
 
-
-
-        # ----------------------------------------
-        # Memory Audit
-        # ----------------------------------------
-
         memory_report = self._safe_execute(
-
             self.memory_agent.save,
-
             investigation
-
         )
-
 
         comparison_report = self._safe_execute(
-
             self.memory_agent.compare_last_two
-
         )
 
-
-
         investigation["memory_report"] = memory_report
-
         investigation["comparison_report"] = comparison_report
 
-
-
         return investigation
-    
