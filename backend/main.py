@@ -1,12 +1,15 @@
 import sys
 import os
 
-try:
-    sys.stdout = open("stdout.log", "a", encoding="utf-8", buffering=1)
-    sys.stderr = open("stderr.log", "a", encoding="utf-8", buffering=1)
-    print("\n--- SERVER START / RESTART ---")
-except Exception as e:
-    pass
+# Only enable file logging in development environments
+if os.getenv("ENVIRONMENT") != "production":
+    try:
+        sys.stdout = open("stdout.log", "a", encoding="utf-8", buffering=1)
+        sys.stderr = open("stderr.log", "a", encoding="utf-8", buffering=1)
+        print("\n--- SERVER START / RESTART ---")
+    except Exception as e:
+        # Silently fail if logging setup fails (e.g., on Render's ephemeral FS)
+        pass
 
 from dotenv import load_dotenv
 load_dotenv()
