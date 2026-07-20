@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { authService, User } from "../services/auth";
+import { authService } from "../services/auth";
+import type { User } from "../services/auth";
 import { FaUserCircle, FaSignOutAlt, FaChevronDown } from "react-icons/fa";
 
 export default function Navbar() {

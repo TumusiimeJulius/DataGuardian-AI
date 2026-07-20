@@ -14,7 +14,6 @@ export default function Signup() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isGoogleSdkLoaded, setIsGoogleSdkLoaded] = useState(false);
 
   const navigate = useNavigate();
 
@@ -25,7 +24,6 @@ export default function Signup() {
     
     const initializeGoogle = () => {
       if (window.google) {
-        setIsGoogleSdkLoaded(true);
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         
         if (clientId) {
