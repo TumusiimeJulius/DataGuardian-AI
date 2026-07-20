@@ -541,6 +541,32 @@ def health():
     except ImportError:
         pass
 
+    # Step-by-step agent loader diagnostics
+    agents_status = {}
+    agents_to_init = [
+        ('quality_agent', 'agents.quality_agent', 'DataQualityAgent'),
+        ('recommendation_agent', 'agents.recommendation_agent', 'RecommendationAgent'),
+        ('rootcause_agent', 'agents.rootcause_agent', 'RootCauseAgent'),
+        ('lineage_agent', 'agents.lineage_agent', 'LineageAgent'),
+        ('anomaly_agent', 'agents.anomaly_agent', 'AnomalyDetectionAgent'),
+        ('prediction_agent', 'agents.prediction_agent', 'PredictionAgent'),
+        ('decision_agent', 'agents.decision_agent', 'DecisionAgent'),
+        ('memory_agent', 'agents.memory_agent', 'MemoryAuditAgent'),
+        ('alert_agent', 'agents.alert_agent', 'AlertMonitoringAgent'),
+        ('observability_agent', 'agents.observability_agent', 'DataObservabilityAgent'),
+        ('pipeline_agent', 'agents.pipeline_agent', 'PipelineMonitoringAgent'),
+        ('repair_agent', 'agents.repair_agent', 'RepairAgent'),
+    ]
+
+    for agent_name, module_path, class_name in agents_to_init:
+        try:
+            module = importlib.import_module(module_path)
+            agent_class = getattr(module, class_name)
+            inst = agent_class()
+            agents_status[agent_name] = "LOADED_OK"
+        except Exception as exc:
+            agents_status[agent_name] = f"ERROR: {str(exc)}"
+
     return {
         "application": "DataGuardian AI",
         "status": "healthy",
@@ -553,7 +579,8 @@ def health():
             "google_genai_installed": genai_new_available,
             "gemini_api_key_present": bool(os.getenv("GEMINI_API_KEY")),
             "cors_origins_env": os.getenv("CORS_ORIGINS"),
-            "active_cors_origins": origins
+            "active_cors_origins": origins,
+            "agents_status": agents_status
         }
     }
 
