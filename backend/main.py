@@ -643,45 +643,70 @@ def health():
         }
     }
 
-
-@app.get("/test_pandas_crash")
-def test_pandas_crash():
+@app.get("/test_pandas_1")
+def test_pandas_1():
     import pandas as pd
     import numpy as np
-    results = {}
-    try:
-        # Create a test dataframe
-        df = pd.DataFrame({
-            "customer_id": [1, 2, 3, 3],
-            "amount": [500, np.nan, 500, -100],
-            "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
-        })
-        results["df_created"] = True
-        
-        # Test isnull
-        results["isnull"] = str(df.isnull().sum().to_dict())
-        
-        # Test duplicated
-        results["duplicated"] = int(df.duplicated().sum())
-        
-        # Test to_datetime
-        try:
-            converted = pd.to_datetime(df["created_at"], errors="coerce")
-            results["to_datetime"] = str(converted.isna().sum())
-        except Exception as e:
-            results["to_datetime_error"] = str(e)
-            
-        # Test negative revenue
-        try:
-            negatives = (df["amount"] < 0).sum()
-            results["negative_amounts"] = int(negatives)
-        except Exception as e:
-            results["negative_amounts_error"] = str(e)
-            
-        return {"status": "success", "results": results}
-    except Exception as e:
-        import traceback
-        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
+    return {"pandas_version": pd.__version__, "numpy_version": np.__version__}
+
+@app.get("/test_pandas_2")
+def test_pandas_2():
+    import pandas as pd
+    import numpy as np
+    df = pd.DataFrame({
+        "customer_id": [1, 2, 3, 3],
+        "amount": [500, np.nan, 500, -100],
+        "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
+    })
+    return {"status": "ok", "df_type": str(type(df))}
+
+@app.get("/test_pandas_3")
+def test_pandas_3():
+    import pandas as pd
+    import numpy as np
+    df = pd.DataFrame({
+        "customer_id": [1, 2, 3, 3],
+        "amount": [500, np.nan, 500, -100],
+        "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
+    })
+    val = df.isnull().sum().to_dict()
+    return {"status": "ok", "isnull": str(val)}
+
+@app.get("/test_pandas_4")
+def test_pandas_4():
+    import pandas as pd
+    import numpy as np
+    df = pd.DataFrame({
+        "customer_id": [1, 2, 3, 3],
+        "amount": [500, np.nan, 500, -100],
+        "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
+    })
+    val = df.duplicated().sum()
+    return {"status": "ok", "duplicated": int(val)}
+
+@app.get("/test_pandas_5")
+def test_pandas_5():
+    import pandas as pd
+    import numpy as np
+    df = pd.DataFrame({
+        "customer_id": [1, 2, 3, 3],
+        "amount": [500, np.nan, 500, -100],
+        "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
+    })
+    val = pd.to_datetime(df["created_at"], errors="coerce")
+    return {"status": "ok", "to_datetime_isna_sum": int(val.isna().sum())}
+
+@app.get("/test_pandas_6")
+def test_pandas_6():
+    import pandas as pd
+    import numpy as np
+    df = pd.DataFrame({
+        "customer_id": [1, 2, 3, 3],
+        "amount": [500, np.nan, 500, -100],
+        "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
+    })
+    val = (df["amount"] < 0).sum()
+    return {"status": "ok", "negatives": int(val)}
 
 
 
