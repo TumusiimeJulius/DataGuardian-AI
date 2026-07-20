@@ -4,7 +4,8 @@ from sqlalchemy import (
     String,
     Float,
     DateTime,
-    Text
+    Text,
+    ForeignKey
 )
 
 from datetime import datetime
@@ -225,3 +226,36 @@ class DatasetHistory(Base):
             f"filename={self.filename}>"
 
         )
+
+
+# ========================================
+# User Authentication Models
+# ========================================
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=True) # Nullable for Google login accounts
+    google_id = Column(String(255), unique=True, index=True, nullable=True)
+    profile_picture = Column(String(500), nullable=True)
+    reset_code = Column(String(50), nullable=True)
+    reset_code_expires_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<User id={self.id} email={self.email}>"
+
+
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+
+    id = Column(String(255), primary_key=True, index=True) # Random UUID token
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<UserSession id={self.id[:8]}... user_id={self.user_id}>"

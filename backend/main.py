@@ -47,6 +47,20 @@ Base.metadata.create_all(
     bind=engine
 )
 
+# Auto-migration for new User columns
+try:
+    from sqlalchemy import text
+    with engine.begin() as conn:
+        try:
+            conn.execute(text("SELECT reset_code FROM users LIMIT 1"))
+        except Exception:
+            conn.execute(text("ALTER TABLE users ADD COLUMN reset_code VARCHAR(50)"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN reset_code_expires_at DATETIME"))
+            print("Auto-migration: Added reset_code columns to users table")
+except Exception as migration_err:
+    print(f"Auto-migration warning: {migration_err}")
+
+
 
 
 
@@ -76,6 +90,7 @@ upload_router = _import_router("api.upload_routes", "router")
 history_router = _import_router("api.history_routes", "router")
 download_router = _import_router("api.download_routes", "router")
 analytics_router = _import_router("api.analytics_routes", "router")
+auth_router = _import_router("api.auth_routes", "router")
 
 
 
@@ -201,6 +216,10 @@ app.add_middleware(
 
 app.include_router(
     main_router
+)
+
+app.include_router(
+    auth_router
 )
 
 
