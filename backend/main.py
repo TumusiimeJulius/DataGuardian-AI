@@ -644,6 +644,47 @@ def health():
     }
 
 
+@app.get("/test_pandas_crash")
+def test_pandas_crash():
+    import pandas as pd
+    import numpy as np
+    results = {}
+    try:
+        # Create a test dataframe
+        df = pd.DataFrame({
+            "customer_id": [1, 2, 3, 3],
+            "amount": [500, np.nan, 500, -100],
+            "created_at": ["2026-01-01", "2026-01-02", "invalid", "invalid"]
+        })
+        results["df_created"] = True
+        
+        # Test isnull
+        results["isnull"] = str(df.isnull().sum().to_dict())
+        
+        # Test duplicated
+        results["duplicated"] = int(df.duplicated().sum())
+        
+        # Test to_datetime
+        try:
+            converted = pd.to_datetime(df["created_at"], errors="coerce")
+            results["to_datetime"] = str(converted.isna().sum())
+        except Exception as e:
+            results["to_datetime_error"] = str(e)
+            
+        # Test negative revenue
+        try:
+            negatives = (df["amount"] < 0).sum()
+            results["negative_amounts"] = int(negatives)
+        except Exception as e:
+            results["negative_amounts_error"] = str(e)
+            
+        return {"status": "success", "results": results}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
+
+
+
 
 
 

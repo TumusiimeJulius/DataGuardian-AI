@@ -7742,5 +7742,26 @@
             "agent": "Root Cause Agent",
             "root_causes": []
         }
+    },
+    {
+        "timestamp": "2026-07-21T01:12:10.499105",
+        "question": "test",
+        "status": "COMPLETED",
+        "quality_score": 100,
+        "issues": [],
+        "prediction": {
+            "agent": "Data Prediction Agent",
+            "predictions": [
+                {
+                    "metric": "Fallback",
+                    "value": "pandas unavailable"
+                }
+            ],
+            "generated_at": "2026-07-21T01:12:10.496972"
+        },
+        "root_causes": {
+            "agent": "Root Cause Agent",
+            "root_causes": []
+        }
     }
 ]
