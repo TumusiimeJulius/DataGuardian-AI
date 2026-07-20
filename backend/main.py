@@ -652,8 +652,8 @@ def health():
 
 
 
-@app.get("/debug_investigate")
-def debug_investigate(question: str):
+@app.get("/diagnose_investigate")
+def diagnose_investigate(question: str, step_limit: int = 18):
     try:
         import time
         import pandas as pd
@@ -664,119 +664,156 @@ def debug_investigate(question: str):
         
         start = time.time()
         
-        # Step 1
-        t = time.time()
-        context = agent._safe_execute(datahub_client.search_dataset, "sales")
-        steps["datahub"] = time.time() - t
+        # Step 1: DataHub
+        if step_limit >= 1:
+            t = time.time()
+            context = agent._safe_execute(datahub_client.search_dataset, "sales")
+            steps["1_datahub"] = time.time() - t
         
-        # Step 2
-        t = time.time()
-        lineage_report = agent._safe_execute(agent.lineage_agent.analyze, context)
-        steps["lineage"] = time.time() - t
-        
-        # Step 3
-        t = time.time()
-        pipeline_report = agent._safe_execute(agent.pipeline_agent.analyze, {"lineage": lineage_report})
-        steps["pipeline"] = time.time() - t
-        
-        # Step 4
-        t = time.time()
-        try:
-            data = pd.read_csv("test_sales.csv")
-            steps["load_dataset"] = time.time() - t
-        except Exception as e:
-            steps["load_dataset_error"] = str(e)
-            return {"error": "load_dataset_failed", "steps": steps}
+        # Step 2: Lineage
+        if step_limit >= 2:
+            t = time.time()
+            lineage_report = agent._safe_execute(agent.lineage_agent.analyze, context)
+            steps["2_lineage"] = time.time() - t
             
-        # Step 5
-        t = time.time()
-        observability_report = agent._safe_execute(agent.observability_agent.analyze, data, context)
-        steps["observability"] = time.time() - t
-        
-        # Step 6
-        t = time.time()
-        quality_report = agent._safe_execute(agent.quality_agent.analyze, data)
-        steps["quality"] = time.time() - t
-        
-        # Step 7
-        t = time.time()
-        anomaly_report = agent._safe_execute(agent.anomaly_agent.analyze, data)
-        steps["anomaly"] = time.time() - t
-        
-        # Step 8
-        t = time.time()
-        prediction_report = agent._safe_execute(agent.prediction_agent.predict, data)
-        steps["prediction"] = time.time() - t
-        
-        # Step 9
-        t = time.time()
-        root_cause_report = agent._safe_execute(agent.rootcause_agent.analyze, quality_report)
-        steps["root_cause"] = time.time() - t
-        
-        # Step 10
-        t = time.time()
-        repair_report = agent._safe_execute(agent.repair_agent.repair, data, quality_report, anomaly_report, root_cause_report)
-        steps["repair"] = time.time() - t
-        
-        # Step 11
-        t = time.time()
-        post_repair_quality_report = agent._safe_execute(agent.quality_agent.analyze, data)
-        steps["post_repair_quality"] = time.time() - t
-        
-        # Step 12
-        t = time.time()
-        recommendation_report = agent._safe_execute(agent.recommendation_agent.generate, post_repair_quality_report)
-        steps["recommendation"] = time.time() - t
-        
-        # Step 13
-        t = time.time()
-        decision_report = agent._safe_execute(agent.decision_agent.decide, post_repair_quality_report, anomaly_report, prediction_report, root_cause_report, recommendation_report)
-        steps["decision"] = time.time() - t
-        
-        # Step 14
-        t = time.time()
-        alert_report = agent._safe_execute(agent.alert_agent.analyze, post_repair_quality_report, anomaly_report, prediction_report)
-        steps["alert"] = time.time() - t
-        
-        # Step 15
-        t = time.time()
-        from agents.ai_service import generate_analysis
-        analysis = agent._safe_execute(generate_analysis, question, {
-            "datahub": context,
-            "lineage": lineage_report,
-            "pipeline": pipeline_report,
-            "observability": observability_report,
-            "quality_before_repair": quality_report,
-            "anomalies": anomaly_report,
-            "predictions": prediction_report,
-            "root_causes": root_cause_report,
-            "repair": repair_report,
-            "quality_after_repair": post_repair_quality_report,
-            "recommendations": recommendation_report,
-            "decision": decision_report,
-            "alerts": alert_report
-        })
-        steps["generate_analysis"] = time.time() - t
-        
-        # Step 16
-        t = time.time()
-        memory_report = agent._safe_execute(agent.memory_agent.save, {
-            "question": question,
-            "status": "COMPLETED",
-            "quality_report_before_repair": quality_report,
-            "prediction_report": prediction_report,
-            "root_cause_report": root_cause_report
-        })
-        steps["memory_save"] = time.time() - t
-        
-        # Step 17
-        t = time.time()
-        comparison_report = agent._safe_execute(agent.memory_agent.compare_last_two)
-        steps["memory_compare"] = time.time() - t
-        
+        # Step 3: Pipeline
+        if step_limit >= 3:
+            t = time.time()
+            pipeline_report = agent._safe_execute(agent.pipeline_agent.analyze, {"lineage": lineage_report})
+            steps["3_pipeline"] = time.time() - t
+            
+        # Step 4: Load Dataset
+        if step_limit >= 4:
+            t = time.time()
+            try:
+                import os
+                from pathlib import Path
+                BASE_DIR = Path(__file__).resolve().parent
+                dataset_path = BASE_DIR / "test_sales.csv"
+                if not dataset_path.exists():
+                    data = pd.DataFrame({
+                        "customer_id": [1, 2, 3, 4],
+                        "amount": [100.0, 150.0, 200.0, 75.0],
+                        "created_at": ["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04"]
+                    })
+                else:
+                    data = pd.read_csv(dataset_path)
+                steps["4_load_dataset"] = time.time() - t
+            except Exception as e:
+                steps["4_load_dataset_error"] = str(e)
+                return {"error": "load_dataset_failed", "steps": steps}
+                
+        # Step 5: Observability
+        if step_limit >= 5:
+            t = time.time()
+            observability_report = agent._safe_execute(agent.observability_agent.analyze, data, context)
+            steps["5_observability"] = time.time() - t
+            
+        # Step 6: Quality
+        if step_limit >= 6:
+            t = time.time()
+            quality_report = agent._safe_execute(agent.quality_agent.analyze, data)
+            steps["6_quality"] = time.time() - t
+            
+        # Step 7: Anomaly
+        if step_limit >= 7:
+            t = time.time()
+            anomaly_report = agent._safe_execute(agent.anomaly_agent.analyze, data)
+            steps["7_anomaly"] = time.time() - t
+            
+        # Step 8: Prediction
+        if step_limit >= 8:
+            t = time.time()
+            prediction_report = agent._safe_execute(agent.prediction_agent.predict, data)
+            steps["8_prediction"] = time.time() - t
+            
+        # Step 9: Root Cause
+        if step_limit >= 9:
+            t = time.time()
+            root_cause_report = agent._safe_execute(agent.rootcause_agent.analyze, quality_report)
+            steps["9_root_cause"] = time.time() - t
+            
+        # Step 10: Repair
+        if step_limit >= 10:
+            t = time.time()
+            repair_report = agent._safe_execute(agent.repair_agent.repair, data, quality_report, anomaly_report, root_cause_report)
+            steps["10_repair"] = time.time() - t
+            
+        # Step 11: Quality After
+        if step_limit >= 11:
+            t = time.time()
+            post_repair_quality_report = agent._safe_execute(agent.quality_agent.analyze, data)
+            steps["11_post_repair_quality"] = time.time() - t
+            
+        # Step 12: Recommendation
+        if step_limit >= 12:
+            t = time.time()
+            recommendation_report = agent._safe_execute(agent.recommendation_agent.generate, post_repair_quality_report)
+            steps["12_recommendation"] = time.time() - t
+            
+        # Step 13: Decision
+        if step_limit >= 13:
+            t = time.time()
+            decision_report = agent._safe_execute(agent.decision_agent.decide, post_repair_quality_report, anomaly_report, prediction_report, root_cause_report, recommendation_report)
+            steps["13_decision"] = time.time() - t
+            
+        # Step 14: Alert
+        if step_limit >= 14:
+            t = time.time()
+            alert_report = agent._safe_execute(agent.alert_agent.analyze, post_repair_quality_report, anomaly_report, prediction_report)
+            steps["14_alert"] = time.time() - t
+            
+        # Step 15: AI explanation
+        if step_limit >= 15:
+            t = time.time()
+            from agents.ai_service import generate_analysis
+            analysis = agent._safe_execute(generate_analysis, question, {
+                "datahub": context,
+                "lineage": lineage_report,
+                "pipeline": pipeline_report,
+                "observability": observability_report,
+                "quality_before_repair": quality_report,
+                "anomalies": anomaly_report,
+                "predictions": prediction_report,
+                "root_causes": root_cause_report,
+                "repair": repair_report,
+                "quality_after_repair": post_repair_quality_report,
+                "recommendations": recommendation_report,
+                "decision": decision_report,
+                "alerts": alert_report
+            })
+            steps["15_generate_analysis"] = time.time() - t
+            
+        # Step 16: Memory save
+        if step_limit >= 16:
+            t = time.time()
+            memory_report = agent._safe_execute(agent.memory_agent.save, {
+                "question": question,
+                "status": "COMPLETED",
+                "quality_report_before_repair": quality_report,
+                "prediction_report": prediction_report,
+                "root_cause_report": root_cause_report
+            })
+            steps["16_memory_save"] = time.time() - t
+            
+        # Step 17: Memory compare
+        if step_limit >= 17:
+            t = time.time()
+            comparison_report = agent._safe_execute(agent.memory_agent.compare_last_two)
+            steps["17_memory_compare"] = time.time() - t
+            
+        # Step 18: serialization
+        if step_limit >= 18:
+            t = time.time()
+            serialized = agent._make_serializable({
+                "status": "COMPLETED",
+                "report": analysis if 'analysis' in locals() else None
+            })
+            steps["18_serialization"] = time.time() - t
+            
         steps["total"] = time.time() - start
         return {"status": "success", "steps": steps}
-    
+        
     except Exception as e:
         import traceback
         return {
