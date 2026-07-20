@@ -551,7 +551,9 @@ def health():
         "diagnostics": {
             "google_generativeai_installed": genai_legacy_available,
             "google_genai_installed": genai_new_available,
-            "gemini_api_key_present": bool(os.getenv("GEMINI_API_KEY"))
+            "gemini_api_key_present": bool(os.getenv("GEMINI_API_KEY")),
+            "cors_origins_env": os.getenv("CORS_ORIGINS"),
+            "active_cors_origins": origins
         }
     }
 
