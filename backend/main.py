@@ -308,6 +308,65 @@ def test_endpoint():
     return {"status": "ok", "message": "Backend is running"}
 
 
+@app.get("/test_imports")
+def test_imports():
+    results = {}
+    
+    # 1. Test google.genai import
+    try:
+        from google import genai
+        results["google_genai_import"] = "OK"
+    except Exception as e:
+        results["google_genai_import"] = f"FAIL: {str(e)}"
+        
+    # 2. Test pandas import
+    try:
+        import pandas as pd
+        results["pandas_import"] = "OK"
+    except Exception as e:
+        results["pandas_import"] = f"FAIL: {str(e)}"
+        
+    # 3. Test numpy import
+    try:
+        import numpy as np
+        results["numpy_import"] = "OK"
+    except Exception as e:
+        results["numpy_import"] = f"FAIL: {str(e)}"
+        
+    # 4. Test sklearn import
+    try:
+        import sklearn
+        results["sklearn_import"] = "OK"
+    except Exception as e:
+        results["sklearn_import"] = f"FAIL: {str(e)}"
+        
+    # 5. Test ai_service import
+    try:
+        from agents.ai_service import generate_analysis
+        results["ai_service_import"] = "OK"
+    except Exception as e:
+        results["ai_service_import"] = f"FAIL: {str(e)}"
+        
+    # 6. Test investigator import
+    try:
+        from agents.investigator import DataInvestigatorAgent
+        results["investigator_import"] = "OK"
+    except Exception as e:
+        results["investigator_import"] = f"FAIL: {str(e)}"
+        
+    # 7. Test investigator instantiation
+    if results.get("investigator_import") == "OK":
+        try:
+            agent = DataInvestigatorAgent()
+            results["investigator_instantiation"] = "OK"
+            results["initialization_errors"] = agent.initialization_errors
+        except Exception as e:
+            results["investigator_instantiation"] = f"FAIL: {str(e)}"
+            
+    return results
+
+
+
 @app.get("/agent_health")
 def agent_health():
     """Check if all agents can be initialized"""
